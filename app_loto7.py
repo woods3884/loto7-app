@@ -8,14 +8,21 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 # --- 設定 ---
-DATA_PATH = "LOTO7_ALL.csv"
+DATA_DIR = "data"
+DATA_PATH = os.path.join(DATA_DIR, "LOTO7_ALL.csv")
+
+# --- 初期フォルダ作成 ---
+os.makedirs(DATA_DIR, exist_ok=True)
 
 # --- データ読み込み ---
 def load_data():
     if not os.path.exists(DATA_PATH):
         columns = ["抽選日", "数字１", "数字２", "数字３", "数字４", "数字５", "数字６", "数字７", "数字B1", "数字B2"]
         return pd.DataFrame(columns=columns)
-    df = pd.read_csv(DATA_PATH)
+    
+    df = pd.read_csv(DATA_PATH, encoding="utf-8")
+    
+    # 列名の標準化
     df.rename(columns={
         "抽選日": "date",
         "数字１": "num1",
@@ -93,14 +100,14 @@ if st.button("🧾 最新結果を取得"):
         st.warning("⚠️ すでに登録済みのデータです")
     else:
         df = pd.concat([pd.DataFrame([new_data]), df], ignore_index=True)
-        df.to_csv(DATA_PATH, index=False, encoding="utf-8")
+        df.to_csv(DATA_PATH, index=False, encoding="utf-8-sig")
         st.success(f"✅ {new_data['抽選日']} の結果を追加しました！")
 
 # --- 頻出ランキング表示 ---
 st.subheader("📊 過去の頻出数字（TOP10）")
 top_nums = get_top_numbers(df)
 for num, count in top_nums:
-    st.write(f"{num}：{count} 回")
+    st.markdown(f"- **{num}：{count} 回**")
 
 # --- おすすめ数字（5口） ---
 st.subheader("🔮 おすすめ数字（ランダム生成・7個 × 5口）")
