@@ -1,8 +1,8 @@
+streamlit
 pandas
 numpy
-streamlit
 lightgbm
+matplotlib
 scikit-learn
-joblib
-beautifulsoup4
 requests
+beautifulsoup4
